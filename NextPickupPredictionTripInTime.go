@@ -148,6 +148,38 @@ func generateReverseClusterFrequencyMapInTime(trips []TripData, kMeansK int) [][
 	return avgCostMap
 }
 
+func generateReverseClusterFrequencyMapCostTotal(trips []TripData, kMeansK int) [][]float64 {
+	var frequencyMap [][]uint64
+	var costMap [][]big.Float
+	var avgCostMap [][]float64
+	var avgCostPerSecondMap [][]float64
+	var timeMap [][]float64
+
+	for i:= 0; i < kMeansK; i++ {
+		frequencyMap = append(frequencyMap,make([]uint64, kMeansK))
+		costMap = append(costMap,make([]big.Float, kMeansK))
+		avgCostMap = append(avgCostMap,make([]float64, kMeansK))
+		avgCostPerSecondMap = append(avgCostPerSecondMap,make([]float64, kMeansK))
+		timeMap = append(timeMap,make([]float64, kMeansK))
+	}
+
+	for _, trip := range trips {
+		frequencyMap[trip.dropoffCluster][trip.pickupCluster]++
+		costMap[trip.dropoffCluster][trip.pickupCluster].Add(&costMap[trip.dropoffCluster][trip.pickupCluster], new(big.Float).SetFloat64(trip.cost))
+		timeMap[trip.dropoffCluster][trip.pickupCluster] += (float64(trip.cost)/float64(trip.dropoffTime.Sub(trip.pickupTime).Seconds()))
+	}
+
+	for i:= 0; i < kMeansK; i++ {
+		for j:=0; j < kMeansK; j++ {
+			if frequencyMap[i][j] > 0 {
+				avgCostMap[i][j], _ = new(big.Float).Quo(&costMap[i][j], new(big.Float).SetUint64(frequencyMap[i][j])).Float64()
+				avgCostPerSecondMap[i][j] = timeMap[i][j] / float64(frequencyMap[i][j])
+ 			}
+		}
+	}
+	return avgCostPerSecondMap
+}
+
 /**
 Function is final and tested
  */

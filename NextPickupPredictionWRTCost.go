@@ -11,9 +11,15 @@ import (
 func main() {
 	maxFold := 10
 	//fold := 1
+
+	// Cluster Numbers
 	kMeansK := 50
+
 	kMeansMaxIteration := 1000
-	experiment := 7
+
+	experiment := 8
+
+	// To determine "n". Example whether if taxi follows our top "n" prediction. In this case, top5.
 	bucketCount:= 5
 
 	log.Println("kMeansK", kMeansK, "kMeansMaxIteration", kMeansMaxIteration, "bucketCount", bucketCount)
@@ -121,7 +127,8 @@ func train_pickupInTime2(taxiIds []uint64, kMeansK int, kMeansMaxIteration int) 
 	tripCollection = loadTripsForTaxis(taxiIds)
 	model := trainKMeans(tripCollection, kMeansK, kMeansMaxIteration)
 	tripCollection = predictClusterAndAssign(tripCollection, model)
-	frequencyMap := generateReverseClusterFrequencyMapInTime(tripCollection, kMeansK)
+	//frequencyMap := generateReverseClusterFrequencyMapInTime(tripCollection, kMeansK)
+	frequencyMap := generateReverseClusterFrequencyMapCostTotal(tripCollection, kMeansK)
 	rankedClusters := applyPageRank(frequencyMap, kMeansK)
 	return rankedClusters, model
 }
