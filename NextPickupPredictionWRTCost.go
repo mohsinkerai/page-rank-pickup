@@ -17,14 +17,14 @@ func main() {
 
 	kMeansMaxIteration := 1000
 
-	experiment := 8
+	experiment := 9
 
 	// To determine "n". Example whether if taxi follows our top "n" prediction. In this case, top5.
 	bucketCount:= 5
 
 	log.Println("kMeansK", kMeansK, "kMeansMaxIteration", kMeansMaxIteration, "bucketCount", bucketCount)
 
-	swg := sizedwaitgroup.New(5)
+	swg := sizedwaitgroup.New(2)
 
 	for fold:=0;fold<maxFold;fold++ {
 		db, err := sql.Open("mysql", "root:123@/thesis")
@@ -58,7 +58,7 @@ func test_pickupInTime2(taxiIds []uint64, model *cluster.KMeans, rankedClusters 
 	breakTrips := 0
 
 	var tripCollection []TripData
-	tripCollection = loadTripsForTaxis(taxiIds)
+tripCollection = loadTripsForTaxis(taxiIds)
 	tripCount := len(tripCollection)
 
 	tripCollection = predictClusterAndAssign(tripCollection, model)
